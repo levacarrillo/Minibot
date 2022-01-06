@@ -1,0 +1,16 @@
+<launch>
+
+	<param name="robot_description" command="cat $(find rob2w_description)/src/urdf/R2D2.urdf"/>
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+
+	<node name="camera_node"  type="camera_node"  pkg="camera"/>
+
+        <node name="rosserial_python" type="serial_node.py" pkg="rosserial_python" output="screen">
+                <param name="port" value="/dev/ttyUSB0"/>
+                <param name="baud" value="200000"/>
+        </node>
+
+        <node name="mobile_base_node"  type="mobile_base_node"    pkg="mobile_base"  />
+	<node name="laser_scan_node"   type="laser_scan_node"     pkg="laser_scan"   />
+
+</launch>
