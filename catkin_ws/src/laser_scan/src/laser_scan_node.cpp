@@ -41,7 +41,7 @@ int main(int argc, char** argv){
 	double theta = 0.5235;
 
 	int count = 0;
-	ros::Rate loop(20);
+	ros::Rate loop(50);
 
 	tf::TransformListener listener;
 
