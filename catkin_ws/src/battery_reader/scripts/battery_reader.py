@@ -3,6 +3,7 @@
 import rospy
 import RPi.GPIO as GPIO
 from std_msgs.msg import Int16
+from minibot_msgs.srv import GetBattPerc, GetBattPercResponse
 
 #GPIO 23 and 24 are battery cells
 #GPIO 8 battery charging
@@ -29,13 +30,19 @@ class bcolors:
 def callback(data):
     global batt_percentage
 
-    min_perc = 20
-    max_perc = 100
-    min_analog = 0
-    max_analog = 1023 
+    min_perc = 20#%
+    max_perc = 99#%
+    min_analog = 418
+    max_analog = 528
 
     batt_percentage = min_perc + (data.data - min_analog) * (max_perc - min_perc) / (max_analog - min_analog)
+
+    if(batt_percentage < 0): batt_percentage = 0 
+    if(batt_percentage > 99): batt_percentage = 99 
     #print(data.data, batt_percentage)
+
+def handle_get_bat_perc(req):
+    return GetBattPercResponse(batt_percentage) 
 
 def battery_reader():
     rospy.init_node('battery_reader', anonymous=True)
@@ -43,28 +50,29 @@ def battery_reader():
     print("Starting battery_reader node by Luis Nava...")
 
     rospy.Subscriber("/battery_data", Int16, callback)
+    s = rospy.Service('battery_perc', GetBattPerc, handle_get_bat_perc)
 
     try:
 
         while not rospy.is_shutdown():
             if GPIO.input(23) or GPIO.input(24):
-                print(bcolors.BOLD + bcolors.FAIL + "BATTERY CRITICALLY LOW :O" + bcolors.ENDC)
+                print(bcolors.BOLD + bcolors.FAIL + "BATTERY CRITICALLY LOW :O" + bcolors.ENDC + " -- Battery at->" + bcolors.BOLD + str(batt_percentage) + "%" + bcolors.ENDC)
             if GPIO.input(25) and GPIO.input(8):
                 pass
             else:
                 if GPIO.input(25):
                     print(bcolors.BOLD + bcolors.OKGREEN + "BATTERY CHARGED COMPLETED :)" + bcolors.ENDC)
                 if GPIO.input(8):
-                    print(bcolors.WARNING + "BATTERY IS CHARGING" + bcolors.ENDC)
-                    
+                    print(bcolors.WARNING + "BATTERY IS CHARGING" + bcolors.ENDC + " -- Battery at->" + bcolors.BOLD + str(batt_percentage) + "%" + bcolors.ENDC)
+                
             rate.sleep()
             
             try:
-                msg = rospy.wait_for_message("/battery_reader", Int16, timeout=1)
+                msg = rospy.wait_for_message("/battery_data", Int16, timeout=1)
             except:
                 pass
 
-            print("Battery at->" + str(batt_percentage) + "%")
+            #print("Battery at->" + str(batt_percentage) + "%")
 
     finally:
         GPIO.cleanup()

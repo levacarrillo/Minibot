@@ -6,7 +6,7 @@
 	<node name="camera_node"  type="camera_node"  pkg="camera"/>
 
         <node name="rosserial_python" type="serial_node.py" pkg="rosserial_python" output="screen">
-                <param name="port" value="/dev/ttyACM0"/>
+                <param name="port" value="/dev/ttyUSB0"/>
                 <param name="baud" value="200000"/>
         </node>
 
