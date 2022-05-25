@@ -1,3 +1,5 @@
+import os
+import rosgraph
 import RPi.GPIO as GPIO
 from time import sleep
 
@@ -25,8 +27,17 @@ try:
     print("READING BATTERY SENSORS..." + bcolors.ENDC) 
 
     while True:
+        if rosgraph.is_master_online():
+            check_battery = os.system("rosservice call /battery_perc")
         if GPIO.input(23) or GPIO.input(24):
             print(bcolors.BOLD + bcolors.FAIL + "BATTERY CRITICALLY LOW :O" + bcolors.ENDC)
+        else:
+            if rosgraph.is_master_online() is False:
+                if GPIO.input(25) or GPIO.input(8):
+                    pass
+                else:
+                    print("Battery still powered")
+
         if GPIO.input(25) and GPIO.input(8):
             pass
         else:
