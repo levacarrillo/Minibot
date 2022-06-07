@@ -7,21 +7,31 @@
 using namespace std;
 
 
+vector<int> sample;
 double sharp_distance[3];
+const int num_samples = 8;
+vector<vector<int>> samples;
+int sum_samples[3] = {0, 0, 0};
 
 void sharp_callback(const std_msgs::Int16MultiArray::ConstPtr& msg) {
 
-	//left_sharp_distance  = 9.609  * pow(msg->data[0], -0.832);
-	//right_sharp_distance = 19.327 * pow(msg->data[1], -0.958); 
-    //cout << "left_sharp_distance: " << left_sharp_distance << "\tright_sharp_distance: " << right_sharp_distance << endl;
+	for(int i=2; i<5; i++) sample.push_back(msg->data[i]);
 
-	for(int i=2; i<5; i++) {
+	samples.push_back(sample);
+	sample.clear();
 
-		sharp_distance[i-2] = 9.609  * pow(msg->data[i], -0.832) + 0.08;
-		if(sharp_distance[i-2] > 0.7) sharp_distance[i-2] = 0.7;		
+	if(samples.size() > num_samples) {
+	    samples.erase(samples.begin());
 	}
+	
+	for(int i=0; i<samples.size(); i++) 
+	    for(int j=0; j<samples[i].size(); j++) sum_samples[j] += samples[i][j];
 
-	//for(int i=0; i<8; i++)  sharp_distance[i] = 9.609  * pow(500, -0.832);
+	for(int i=0; i<3; i++){
+	    sharp_distance[i] = 9.609  * pow(sum_samples[i]/samples.size(), -0.832) + 0.08;
+	    if(sharp_distance[i] > 0.7) sharp_distance[i] = 0.7;
+	    sum_samples[i] = 0;
+	}
 }
 
 int main(int argc, char** argv){
