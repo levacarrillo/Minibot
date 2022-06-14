@@ -52,18 +52,29 @@ def battery_reader():
     rospy.Subscriber("/battery_data", Int16, callback)
     s = rospy.Service('battery_perc', GetBattPerc, handle_get_bat_perc)
 
+    rospy.set_param('battery_low', False)
+
     try:
 
         while not rospy.is_shutdown():
             if GPIO.input(23) or GPIO.input(24):
                 print(bcolors.BOLD + bcolors.FAIL + "BATTERY CRITICALLY LOW :O" + bcolors.ENDC + " -- Battery at->" + bcolors.BOLD + str(batt_percentage) + "%" + bcolors.ENDC)
+                rospy.set_param('battery_low', True)
+                rospy.set_param('battery_complete', False)
             if GPIO.input(25) and GPIO.input(8):
                 pass
             else:
                 if GPIO.input(25):
                     print(bcolors.BOLD + bcolors.OKGREEN + "BATTERY CHARGED COMPLETED :)" + bcolors.ENDC)
+                    rospy.set_param('battery_low', False)
+                    rospy.set_param('battery_complete', True)
+                else:
+                    rospy.set_param('battery_complete', False)
                 if GPIO.input(8):
                     print(bcolors.WARNING + "BATTERY IS CHARGING" + bcolors.ENDC + " -- Battery at->" + bcolors.BOLD + str(batt_percentage) + "%" + bcolors.ENDC)
+                    rospy.set_param('battery_charging', True)
+                else:
+                    rospy.set_param('battery_charging', False)
                 
             rate.sleep()
             
