@@ -2,6 +2,7 @@
 
 	<param name="robot_description" command="cat $(find rob2w_description)/src/urdf/carritoAP.urdf"/>
 	<rosparam command="load" file="$(find rob2w_description)/params/pid.yaml"/>
+	<rosparam command="load" file="$(find rob2w_description)/params/batt_threshold.yaml"/>
 
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 	<!--node name="camera_node"  type="camera_node"  pkg="camera"/-->
