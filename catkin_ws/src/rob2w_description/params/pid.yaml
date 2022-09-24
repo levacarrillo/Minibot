@@ -1,4 +1,4 @@
-left_pid1: [0.6, 0.00085, 0.0013]  #pid for left wheel 
-left_pid2: [0.6, 0.001, 0.0013]    #pid for left wheel if goes backward
-right_pid1: [0.98, 0.0012, 0.0007] #pid for right wheel
-right_pid2: [0.6, 0.0012, 0.0007]  #pid for right wheel if goes backward
+left_pid1:  [0.1, 0.0008, 0.0]  #pid for left wheel 
+left_pid2:  [0.1, 0.0008, 0.0]  #pid for left wheel if goes backward
+right_pid1: [0.1, 0.0009, 0.0]  #pid for right wheel
+right_pid2: [0.1, 0.0009, 0.0]  #pid for right wheel if goes backward
